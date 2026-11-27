@@ -1,0 +1,79 @@
+classDiagram
+    class Item {
+        <<abstract>>
+        -titulo: str
+        -autor: str
+        -disponivel: bool
+        +prazo_dias() int
+        +multa_por_dia() float
+        +descricao() str
+    }
+    class Livro {
+        +prazo_dias() int
+        +multa_por_dia() float
+    }
+    class Revista {
+        +prazo_dias() int
+        +multa_por_dia() float
+        +descricao() str
+    }
+    class Usuario {
+        <<abstract>>
+        -nome: str
+        +limite_emprestimos() int
+    }
+    class Leitor {
+        +limite_emprestimos() int
+    }
+    class Bibliotecario {
+        +limite_emprestimos() int
+        +cadastrar_item(biblioteca, tipo, titulo, autor)
+    }
+    class Emprestimo {
+        -usuario: Usuario
+        -item: Item
+    }
+    class Multa {
+        +calcular(item, dias_atraso) float
+    }
+    class Biblioteca {
+        -itens: list
+        -emprestimos: list
+        +cadastrar_livro(titulo, autor)
+        +cadastrar_revista(titulo, autor)
+        +listar_itens()
+        +buscar_item(titulo) Item
+        +emprestar(usuario, titulo)
+        +devolver(usuario, titulo, dias_atraso)
+    }
+    class MixTerminal {
+        +ask(mensagem) str
+        +ask_int(mensagem, padrao) int
+    }
+    class System {
+        -biblioteca: Biblioteca
+        -usuarios: dict
+        -options: dict
+        +start()
+        +menu()
+    }
+
+    Item <|-- Livro
+    Item <|-- Revista
+    Usuario <|-- Leitor
+    Usuario <|-- Bibliotecario
+    MixTerminal <|-- System
+
+    System "1" *-- "1" Biblioteca : possui
+    System "1" *-- "0..*" Usuario : cadastra
+    Biblioteca "1" *-- "0..*" Item : acervo
+    Biblioteca "1" *-- "0..*" Emprestimo : registra
+    Emprestimo "0..*" --> "1" Usuario : feito por
+    Emprestimo "0..1" --> "1" Item : refere-se a
+
+    System ..> Leitor : cria
+    System ..> Bibliotecario : cria
+    Biblioteca ..> Livro : cria
+    Biblioteca ..> Revista : cria
+    Biblioteca ..> Multa : usa
+    Bibliotecario ..> Biblioteca : usa
